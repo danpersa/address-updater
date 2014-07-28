@@ -1,16 +1,16 @@
 ## README
 
+### Important
+
+This is only the concept part!! The final version will follow!!
+
 ### Technologies
 
-The application is a Spring Batch application.
-
-I'm using Spring Boot to quickly start the Spring Batch Job.
-
-I will use JPA to persist the Entities in a database.
-
-I'm using the Apache Tika library to extract the text inside of the HTML body.
-
-I will use Lucene to index the text of the body of the HTML, in order to faster find the addresses.
+- The application is a Spring Batch application.
+- I'm using Spring Boot to quickly start the Spring Batch Job.
+- I will use JPA to persist the Entities in a database.
+- I'm using the Apache Tika library to extract the text inside of the HTML body.
+- I will use Lucene to index the text of the body of the HTML, in order to faster find the addresses.
 
 ### Flow Description
 
