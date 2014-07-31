@@ -1,8 +1,11 @@
 package de.regis.service;
 
-import de.regis.dao.CompanyDao;
+import de.regis.repository.CompanyRepository;
 import de.regis.domain.Address;
 import de.regis.domain.Company;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Nonnull;
@@ -14,15 +17,16 @@ import java.util.List;
 @Service
 public class CompanyService {
 
-    private CompanyDao companyDao;
+    @Autowired
+    private CompanyRepository companyRepository;
 
     @Nonnull
-    public List<Company> getCompanies(int start, int limit) {
-        return companyDao.select(start, limit);
+    public Page<Company> getCompanies(int page, int size) {
+        return companyRepository.findAll(new PageRequest(page, size));
     }
 
-    public int totalCompanies() {
-        return companyDao.count();
+    public long totalCompanies() {
+        return companyRepository.count();
     }
 
     public void addAddresses(@Nonnull Company company, @Nonnull List<Address> addresses) {

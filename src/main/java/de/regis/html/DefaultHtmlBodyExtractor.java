@@ -1,5 +1,6 @@
 package de.regis.html;
 
+import com.google.common.base.CharMatcher;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
@@ -33,7 +34,6 @@ public class DefaultHtmlBodyExtractor implements HtmlBodyExtractor {
         } catch (IOException | SAXException | TikaException e) {
             throw new IllegalStateException("Can't parse the html page");
         }
-
 
         return handler.toString();
     }

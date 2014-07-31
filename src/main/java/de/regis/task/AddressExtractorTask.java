@@ -1,32 +1,35 @@
 package de.regis.task;
 
-import de.regis.service.AddressExtractor;
-import de.regis.domain.Address;
 import de.regis.domain.Company;
-import de.regis.service.AddressUpdater;
+import de.regis.updater.AddressUpdater;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.Nonnull;
 import java.util.List;
-import java.util.concurrent.Callable;
 
-import static com.google.common.base.Preconditions.*;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * @author danix
  */
-public class AddressExtractorTask implements Runnable {
+@Component
+public class AddressExtractorTask {
 
-    private final List<Company> companies;
+    private static final Logger LOG = LoggerFactory.getLogger(AddressExtractorTask.class);
 
-    private final AddressUpdater addressUpdater;
+    @Autowired
+    private AddressUpdater addressUpdater;
 
-    public AddressExtractorTask(@Nonnull List<Company> companies, @Nonnull AddressUpdater addressUpdater) {
-        this.companies = checkNotNull(companies);
-        this.addressUpdater = checkNotNull(addressUpdater);
-    }
-
-    @Override
-    public void run() {
-        companies.forEach(addressUpdater::updateAddresses);
+    // @Async - commented in order to see the ordering in the logs
+    public void run(@Nonnull List<Company> companies) {
+        LOG.info("Start AddressExecutorTask as an async task");
+        checkNotNull(companies).forEach((company) -> {
+            LOG.info("Process {} company", company);
+            addressUpdater.updateAddresses(company);
+        });
     }
 }

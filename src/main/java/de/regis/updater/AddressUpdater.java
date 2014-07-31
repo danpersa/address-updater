@@ -1,4 +1,4 @@
-package de.regis.service;
+package de.regis.updater;
 
 import de.regis.domain.Company;
 

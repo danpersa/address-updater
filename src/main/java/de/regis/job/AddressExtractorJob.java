@@ -1,10 +1,13 @@
 package de.regis.job;
 
-import de.regis.service.AddressUpdater;
 import de.regis.domain.Company;
+import de.regis.updater.AddressUpdater;
 import de.regis.service.CompanyService;
 import de.regis.task.AddressExtractorTask;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -16,24 +19,25 @@ import java.util.concurrent.ExecutorService;
 @Component
 public class AddressExtractorJob {
 
+    private static final Logger LOG = LoggerFactory.getLogger(AddressExtractorJob.class);
     private static final int COMPANIES_PER_PAGE = 10;
 
     @Autowired
     private CompanyService companyService;
 
     @Autowired
-    private ExecutorService executorService;
-
-    @Autowired
-    private AddressUpdater addressUpdater;
+    private AddressExtractorTask addressExtractorTask;
 
     public void run() {
-        int totalCompanies = companyService.totalCompanies();
+        final long totalCompanies = companyService.totalCompanies();
 
-        for (int i = 0; i < totalCompanies / COMPANIES_PER_PAGE; ++i) {
-            List<Company> companies = companyService.getCompanies(i * COMPANIES_PER_PAGE, COMPANIES_PER_PAGE);
-            executorService.submit(new AddressExtractorTask(companies, addressUpdater));
+        LOG.info("Start AddressExtractorJob for {} companies", totalCompanies);
+
+        for (int i = 0; i <= totalCompanies / COMPANIES_PER_PAGE; ++i) {
+            final Page<Company> companiesPage = companyService.getCompanies(i, COMPANIES_PER_PAGE);
+            final List<Company> companies = companiesPage.getContent();
+            LOG.info("Batch of companies: {}", companies);
+            addressExtractorTask.run(companies);
         }
     }
-
 }
